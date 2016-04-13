@@ -1,0 +1,20 @@
+<!-- Google does not allow browsers direct access to web services, so this JavaScript API must be included -->
+<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAb-T1uOwTBeWYtKb6_lm-tscpcHJotJ4Y'></script>
+
+<!-- Exposes a ridePassEligible function -->
+<script src='ride-pass-eligible.js'></script>
+
+<!-- Tests that log to console -->
+<script src='dev/browser-test.js'></script>
+
+<script>
+
+console.log('-- START --');
+
+ridePassEligible('113 S Fraser St', 0.75, function(eligibility, details) {
+  console.log(eligibility, details);
+});
+
+console.log('--- END ---');
+
+</script>
