@@ -20,10 +20,10 @@ ridePassEligible(address, distance, function(eligibility, details) {
 
 ## Developing
 
-With [browserify](http://browserify.org/), run:
-
-`watchify tests/ride-pass-eligible-test.js -o test.js`
-
-Then watch test results in console for `index.html`.
+Watch test results in console for `index.html`.
 
 `python -m SimpleHTTPServer 8000`
+
+To update tests, with [browserify](http://browserify.org/) run:
+
+`browserify dev/test.js > dev/browser-test.js`
