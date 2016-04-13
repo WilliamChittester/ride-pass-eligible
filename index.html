@@ -11,10 +11,13 @@
 
 console.log('-- START --');
 
-ridePassEligible('113 S Fraser St', 0.75, function(eligibility, details) {
-  console.log(eligibility, details);
-});
+var address = '1221 Old Boalsburg Road';
 
-console.log('--- END ---');
+ridePassEligible(address, 0.75, function(eligibility, details) {
+  console.log('The address "' + address + '" is ' + (eligibility ? '' : 'not ') + 'eligible for RidePass.');
+  console.log('details', details);
+
+  console.log('--- END ---');
+});
 
 </script>
