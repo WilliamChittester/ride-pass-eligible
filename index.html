@@ -99,6 +99,9 @@
       }
     </script> -->
     <script>
+
+    var currAddress;
+
     function initAutocomplete() {
         var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 40.7934, lng: -77.8600},
@@ -157,8 +160,17 @@
             } else {
               bounds.extend(place.geometry.location);
             }
+
+            currAddress = place;
+            console.log(currAddress)
+            ridePassEligible(currAddress.formatted_address, 0.75, function(eligibility, details) {
+              console.log('The address "' + currAddress.formatted_address + '" is ' + (eligibility ? '' : 'not ') + 'eligible for RidePass.');
+              console.log('details', details);
+
+              console.log('--- END ---');
+            });
           });
-          map.fitBounds(bounds);
+          //map.fitBounds(bounds);
         });
       }
     </script>
