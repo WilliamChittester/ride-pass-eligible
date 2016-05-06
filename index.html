@@ -121,15 +121,7 @@
   <input id="pac-input" class="controls" type="text" placeholder="Search for Your Address">
 
   <div id="map"></div>
-      <!-- <script>
-        var map;
-        function initMap() {
-          map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 40.7934, lng: -77.8600},
-            zoom: 13
-          });
-        }
-      </script> -->
+
       <script>
 
       var currAddress;
@@ -178,12 +170,6 @@
               return;
             }
 
-            //Clear out the old markers.
-            // markers.forEach(function(marker) {
-            //   marker.setMap(null);
-            // });
-            // markers = [];
-
             // For each place, get the icon, name and location.
             var bounds = new google.maps.LatLngBounds();
             
@@ -195,14 +181,6 @@
                 anchor: new google.maps.Point(17, 34),
                 scaledSize: new google.maps.Size(25, 25)
               };
-
-              // Create a marker for each place.
-              // markers.push(new google.maps.Marker({
-              //   map: map,
-              //   icon: icon,
-              //   title: place.name,
-              //   position: place.geometry.location
-              // }));
 
               if (place.geometry.viewport) {
                 // Only geocodes have viewport.
@@ -216,7 +194,17 @@
               ridePassEligible(currAddress.formatted_address, 0.75, function(eligibility, details) {
                 console.log('The address "' + currAddress.formatted_address + '" is ' + (eligibility ? '' : 'not ') + 'eligible for RidePass.');
 
-                console.log('details', details)
+                console.log(eligibility);
+
+                var popUpContent;
+
+                console.log('details', details);
+
+                if (eligibility == true){
+                  popUpContent = '<b>You are eligible.</b> ' + '<br> Distance to nearest bus stop ' + (details.distance).toFixed(2) + ' miles.'
+                } else {
+                  popUpContent = '<b>You are not eligible.</b> ' + '<br> Distance to nearest bus stop ' + (details.distance).toFixed(2) + ' miles.'
+                };
 
                 var request = {
                   origin: details.location,
@@ -240,24 +228,31 @@
 
                 var startMarker = new google.maps.Marker({
                   map: map,
+                  icon: 'home.png',
                   position: details.location,
                   map_icon_label: '<span class="Start Location"></span>'
                 });
 
                 var endMarker = new google.maps.Marker({
                   map: map,
+                  icon: 'bus.png',
                   position: details.nearestStopLocation,
                   map_icon_label: '<span class="Nearest Bus Stop"></span>'
                 });
+
+                var infowindow = new google.maps.InfoWindow({
+                    content: popUpContent
+                });
+
+                infowindow.open(map,startMarker);
 
                 console.log('--- END ---');
 
               });
 
 
-
             });
-            //map.fitBounds(bounds);
+        
           });
         }
       </script>
