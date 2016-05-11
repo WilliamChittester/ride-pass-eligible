@@ -24,12 +24,13 @@
       <!-- Address Location, Eligibility, and Routing -->
       <script>
       
-        // source link for marker icon images
+        // source links for marker icon images
         var homeIcon = 'home.png';
         var busIcon = 'bus.png';
         
         var currAddress;
-
+        
+        // Calback function which initializes map and functionality
         function initAutocomplete() {
           var map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 40.7934, lng: -77.8600},
@@ -37,7 +38,7 @@
             mapTypeId: google.maps.MapTypeId.ROADMAP
           });
 
-          // Create the search box and link it to the UI element.
+          // Create the search box and link it to the address input.
           var input = document.getElementById('address-input');
           var searchBox = new google.maps.places.SearchBox(input);
           map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -47,20 +48,20 @@
             searchBox.setBounds(map.getBounds());
           });
 
-          var markers = [];
-
           // Listen for the event fired when the user selects a prediction and retrieve
           // more details for that place.
           searchBox.addListener('places_changed', function() {
             var directionsDisplay;
             var directionsService = new google.maps.DirectionsService();
-
+            
+            // Direction Renderer Options
             directionsDisplay = new google.maps.DirectionsRenderer({ 
               'draggable': false,
               'suppressInfoWindows': true,
               'suppressMarkers': true 
             });
-
+            
+            // Route polyline styling
             var eligiblePolyline = {
               strokeColor: "#00FF00"  
             };
@@ -68,13 +69,16 @@
             var ineligiblePolyline = {
               strokeColor: "#FF0000 "
             };
-
+            
+            // sets places equal to autocomplete results
             var places = searchBox.getPlaces();
 
+            // if user has not searched for address continue listening
             if (places.length == 0) {
               return;
             }
 
+            // sets place equal to user selected address
             places.forEach(function(place) {
               var icon = {
                 url: place.icon,
@@ -84,35 +88,40 @@
                 scaledSize: new google.maps.Size(25, 25)
               };
 
+              // Start of Eligibility Test for searched Address
               currAddress = place;
               console.log(currAddress)
+              
+              // Runs eligibility function for searched address
               ridePassEligible(currAddress.formatted_address, 0.75, function(eligibility, details) {
                 console.log('The address "' + currAddress.formatted_address + '" is ' + (eligibility ? '' : 'not ') + 'eligible for RidePass.');
-
                 console.log(eligibility);
-
-                var popUpContent;
-
                 console.log('details', details);
-
+                
+                // Content for address marker popup
+                var popUpContent;
+                // Sets content based on results of eligibility  
                 if (eligibility == true){
                   popUpContent = '<b>You are eligible.</b> ' + '<br> Distance to nearest bus stop ' + (details.distance).toFixed(2) + ' miles.'
                 } else {
                   popUpContent = '<b>You are not eligible.</b> ' + '<br> Distance to nearest bus stop ' + (details.distance).toFixed(2) + ' miles.'
                 };
-
+                
+                // Start of routing request between address and nearest stop
                 var request = {
                   origin: details.location,
                   destination: details.nearestStopLocation,
                   travelMode: google.maps.TravelMode.WALKING
                 };
-
+                
+                // Sets polyline style based on route distance
                 if (details.distance > 0.75) {
                   directionsDisplay.setOptions({polylineOptions: eligiblePolyline});
                 } else {
                   directionsDisplay.setOptions({polylineOptions: ineligiblePolyline});
                 };
-
+                
+                // Requests route polyline from Google Directions Service based on request variable
                 directionsService.route(request, function(response,status){
                   if (status == google.maps.DirectionsStatus.OK) {
                     directionsDisplay.setDirections(response);
@@ -121,20 +130,23 @@
                   }
                 });
 
+                // Adds user address marker to map
                 var startMarker = new google.maps.Marker({
                   map: map,
                   icon: homeIcon,
                   position: details.location,
                   map_icon_label: '<span class="Start Location"></span>'
                 });
-
+                
+                // Adds nearest bus stop marker to map
                 var endMarker = new google.maps.Marker({
                   map: map,
                   icon: busIcon ,
                   position: details.nearestStopLocation,
                   map_icon_label: '<span class="Nearest Bus Stop"></span>'
                 });
-
+                
+                // Adds pop up window to user address marker
                 var infowindow = new google.maps.InfoWindow({
                   content: popUpContent
                 });
@@ -150,6 +162,7 @@
       </script>
 
     <script>
+      // Jquery for initial directions dialog box
       $(function(){
         $( "#dialog" ).dialog({
           autoOpen: true,
@@ -163,6 +176,7 @@
             duration: 1000
           }
         });
+        // Closes box if user clicks on address search bar
         $( "#address-input" ).click(function() {
           $( "#dialog" ).dialog( "close" );
         });
@@ -229,13 +243,16 @@
   </head>
   <body>
     
+    <!-- Initial Dialog Box Content -->
     <div id="dialog" title="Welcome to the RidePass Webtool">
       <p>This tool will allow you to determine your eligibility for RidePass. Please search for your local address in the search bar in the upper left corner.  Your eligibility will be determined based on the walking distance between your local address and the nearest Blue Loop or Red Link bus stop.</p>
       <p> <font size = '1'> RidePass eligibility is based on additional criteria. This tool is for distance based eligibility only.</font></p>
     </div>
-
+    
+    <!-- Address Search Bar -->
     <input id="address-input" class="controls" type="text" placeholder="Search for Your Address">
 
+    <!-- Adds Map Element -->
     <div id="map"></div>  
   
   </body>
